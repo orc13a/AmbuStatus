@@ -57,6 +57,7 @@
     width: 100%;
     padding: 40px 60px;
     justify-content: space-between;
+    align-items: center;
 }
 
 .extraInfoDate {
@@ -69,6 +70,10 @@
     align-items: center;
     gap: 25px;
     color: #646464;
+}
+
+.extraInfoTime {
+    align-items: center;
 }
 
 .extraInfoTime > div {
@@ -88,7 +93,7 @@
     font-weight: 500;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
+    gap: 50px;
     color: #646464;
 }
 

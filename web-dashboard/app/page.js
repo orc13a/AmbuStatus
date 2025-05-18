@@ -199,10 +199,28 @@ export default function Dashboard() {
                     {/* Display which ambulance is expected next */}
                     <div className={styles.extraInfoNextCar}>
                         <div>
-                            Næste bil:
+                            <div>
+                                #1
+                            </div>
+                            <div className={styles.extraInfoNextCarText}>
+                                DN2
+                            </div>
                         </div>
-                        <div className={styles.extraInfoNextCarText}>
-                            DN1
+                        <div>
+                            <div>
+                                #2
+                            </div>
+                            <div className={styles.extraInfoNextCarText}>
+                                DN1
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                #3
+                            </div>
+                            <div className={styles.extraInfoNextCarText}>
+                                DN3
+                            </div>
                         </div>
                     </div>
                 </div>
