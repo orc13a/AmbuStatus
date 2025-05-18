@@ -1,0 +1,98 @@
+.mainFlex {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+.garageMainFlex {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  gap: 65px;
+  padding: 40px 25px;
+}
+
+.garageSlotMain {
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.garageSlotMain img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.garageSlotMainDivImage img {
+    opacity: 40%;
+}
+
+.garageSlotMain b {
+    font-weight: 700;
+    font-size: xx-large;
+    letter-spacing: 2.5px;
+    color: rgb(209, 0, 0);
+}
+
+.garageSlotHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.garageSlotTimer {
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    font-size: xx-large;
+    font-variant-numeric: tabular-nums;
+}
+
+.extraInfoContainer {
+    display: flex;
+    width: 100%;
+    padding: 40px 60px;
+    justify-content: space-between;
+}
+
+.extraInfoDate {
+    font-size: xx-large;
+    font-weight: 500;
+    letter-spacing: 6px;
+    width: 30%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 25px;
+    color: #646464;
+}
+
+.extraInfoTime > div {
+    width: 30%;
+    font-size: 50px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    font-variant-numeric: tabular-nums;
+    color: #646464;
+}
+
+.extraInfoNextCar {
+    font-size: xx-large;
+    letter-spacing: 2.5px;
+    width: 30%;
+    display: flex;
+    font-weight: 500;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    color: #646464;
+}
+
+.extraInfoNextCarText {
+    font-weight: 700;
+    color: rgb(209, 0, 0);
+}
