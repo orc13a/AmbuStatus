@@ -10,36 +10,70 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
     const [currentTime, setCurrentTime] = useState(new Date());
 
+    // These objects represent the status of each garage slot, including gate, timestamp, status, and assignedUnit.
     const initialTimestamps = [
-        '2025-05-18T10:17:59.811Z',
-        '2025-05-18T10:35:59.811Z',
-        '2025-05-18T11:05:59.811Z',
-        '2025-05-18T09:18:59.811Z',
-        '2025-05-18T20:17:59.811Z',
+        {
+            gate: "P5",
+            timestamp: Date.now() - 2 * 60 * 1000, // 2 minutes ago
+            status: "occupied",
+            assignedUnit: "A1",
+            shiftStart: 11,
+            shiftEnd: 23,
+        },
+        {
+            gate: "P4",
+            timestamp: Date.now() - 10 * 60 * 1000, // 10 minutes ago
+            status: "away",
+            assignedUnit: "D1",
+            shiftStart: 6,
+            shiftEnd: 18,
+        },
+        {
+            gate: "P3",
+            timestamp: Date.now() - 15 * 60 * 1000, // 15 minutes ago
+            status: "occupied",
+            assignedUnit: "DN3",
+            shiftStart: null,
+            shiftEnd: null,
+        },
+        {
+            gate: "P2",
+            timestamp: Date.now() - 25 * 60 * 1000, // 25 minutes ago
+            status: "away",
+            assignedUnit: "DN2",
+            shiftStart: null,
+            shiftEnd: null,
+        },
+        {
+            gate: "P1",
+            timestamp: Date.now() - 30 * 60 * 1000, // 30 minutes ago
+            status: "occupied",
+            assignedUnit: "DN1",
+            shiftStart: null,
+            shiftEnd: null,
+        }
     ];
 
     const [garageTimestamps, setGarageTimestamps] = useState(initialTimestamps);
 
-    // Converts an ISO timestamp string to a human-readable elapsed time
-    const getElapsedTime = (timestampStr) => {
-        const parsedTimestamp = new Date(timestampStr); // Parse the string into a Date object
-        const now = new Date(); // Get the current time
+    // This function takes a garage slot object and returns how long ago the timestamp was.
+    const getElapsedTime = (garageSlot) => {
+        const timestampMs = garageSlot.timestamp;
+        const now = Date.now();
+        const diff = Math.floor((now - timestampMs) / 1000);
 
-        if (isNaN(parsedTimestamp.getTime())) return "--:--"; // Return placeholder if invalid date
+        if (diff < 0) return "00:00";
 
-        const diff = Math.floor((now.getTime() - parsedTimestamp.getTime()) / 1000); // Difference in seconds
-        if (diff < 0) return "00:00"; // Future timestamps show as 00:00
-
-        const hours = Math.floor(diff / 3600); // Calculate full hours
-        const minutes = Math.floor((diff % 3600) / 60); // Remaining minutes
-        const seconds = diff % 60; // Remaining seconds
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
 
         const parts = [];
-        if (hours > 0) parts.push(`${hours}`); // Include hours only if non-zero
-        if (minutes > 0 || hours > 0) parts.push(minutes.toString().padStart(2, '0')); // Pad minutes
-        parts.push(seconds.toString().padStart(2, '0')); // Pad seconds
+        if (hours > 0) parts.push(hours.toString());
+        if (minutes > 0 || hours > 0) parts.push(minutes.toString().padStart(2, '0'));
+        parts.push(seconds.toString().padStart(2, '0'));
 
-        return parts.join(':'); // Format as HH:MM:SS or MM:SS
+        return parts.join(":");
     };
 
     // useEffect sets up a timer that updates currentTime every second
@@ -74,7 +108,7 @@ export default function Dashboard() {
                         <div className={styles.garageSlotMainDivImage}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={AmbuStatus_garage_occupied}
+                                src={garageTimestamps[0].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
@@ -98,7 +132,7 @@ export default function Dashboard() {
                         <div>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={AmbuStatus_garage_occupied}
+                                src={garageTimestamps[1].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
@@ -122,7 +156,7 @@ export default function Dashboard() {
                         <div>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={AmbuStatus_garage_occupied}
+                                src={garageTimestamps[2].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
@@ -146,7 +180,7 @@ export default function Dashboard() {
                         <div>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={AmbuStatus_garage_empty}
+                                src={garageTimestamps[3].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
@@ -170,7 +204,7 @@ export default function Dashboard() {
                         <div>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={AmbuStatus_garage_occupied}
+                                src={garageTimestamps[4].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
