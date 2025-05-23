@@ -4,8 +4,9 @@ import Image from "next/image";
 import styles from "./page.module.css";
 
 import AmbuStatus_garage_empty from "/public/AmbuStatus_garage_empty.svg";
-import AmbuStatus_garage_occupied from "/public/AmbuStatus_garage_occupied.svg";
+import AmbuStatus_garage_home from "/public/AmbuStatus_garage_home.svg";
 import { useEffect, useState } from "react";
+import { IconCoffee, IconRoad } from "@tabler/icons-react";
 
 export default function Dashboard() {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -15,64 +16,208 @@ export default function Dashboard() {
         {
             gate: "P5",
             timestamp: Date.now() - 2 * 60 * 1000, // 2 minutes ago
-            status: "occupied",
+            status: "home",
             assignedUnit: "A1",
-            shiftStart: 11,
-            shiftEnd: 23,
+            shiftStart: '11:00',
+            shiftEnd: '23:00',
+            workInWeekends: false,
+            awayCount: 0,
+            breaks: {
+                day: {
+                    firstBreakStart: null,
+                    firstBreakEnd: null,
+                    secondBreakStart: null,
+                    secondBreakEnd: null,
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                },
+                night: {
+                    firstBreakStart: null,
+                    firstBreakEnd: null,
+                    secondBreakStart: null,
+                    secondBreakEnd: null,
+                    hadFirstBrake: null,
+                    hadSecondBrake: null,
+                }
+            }
         },
         {
             gate: "P4",
             timestamp: Date.now() - 10 * 60 * 1000, // 10 minutes ago
-            status: "away",
+            status: "home",
             assignedUnit: "D1",
-            shiftStart: 6,
-            shiftEnd: 18,
+            shiftStart: '06:00',
+            shiftEnd: '18:00',
+            workInWeekends: false,
+            awayCount: 0,
+            breaks: {
+                day: {
+                    firstBreakStart: null,
+                    firstBreakEnd: null,
+                    secondBreakStart: null,
+                    secondBreakEnd: null,
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                },
+                night: {
+                    firstBreakStart: null,
+                    firstBreakEnd: null,
+                    secondBreakStart: null,
+                    secondBreakEnd: null,
+                    hadFirstBrake: null,
+                    hadSecondBrake: null,
+                }
+            }
         },
         {
             gate: "P3",
             timestamp: Date.now() - 15 * 60 * 1000, // 15 minutes ago
-            status: "occupied",
+            status: "home",
             assignedUnit: "DN3",
-            shiftStart: null,
-            shiftEnd: null,
+            shiftStart: '07:00',
+            shiftEnd: '19:00',
+            workInWeekends: true,
+            awayCount: 0,
+            breaks: {
+                day: {
+                    firstBreakStart: '11:00',
+                    firstBreakEnd: '14:00',
+                    secondBreakStart: '15:30',
+                    secondBreakEnd: '18:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                },
+                night: {
+                    firstBreakStart: '22:30',
+                    firstBreakEnd: '01:30',
+                    secondBreakStart: '02:30',
+                    secondBreakEnd: '05:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                }
+            }
         },
         {
             gate: "P2",
             timestamp: Date.now() - 25 * 60 * 1000, // 25 minutes ago
             status: "away",
             assignedUnit: "DN2",
-            shiftStart: null,
-            shiftEnd: null,
+            shiftStart: '07:00',
+            shiftEnd: '19:00',
+            workInWeekends: true,
+            awayCount: 0,
+            breaks: {
+                day: {
+                    firstBreakStart: '11:00',
+                    firstBreakEnd: '14:00',
+                    secondBreakStart: '15:30',
+                    secondBreakEnd: '18:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                },
+                night: {
+                    firstBreakStart: '22:30',
+                    firstBreakEnd: '01:30',
+                    secondBreakStart: '02:30',
+                    secondBreakEnd: '05:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                }
+            }
         },
         {
             gate: "P1",
             timestamp: Date.now() - 30 * 60 * 1000, // 30 minutes ago
-            status: "occupied",
+            status: "home",
             assignedUnit: "DN1",
-            shiftStart: null,
-            shiftEnd: null,
+            shiftStart: '07:00',
+            shiftEnd: '19:00',
+            workInWeekends: true,
+            awayCount: 0,
+            breaks: {
+                day: {
+                    firstBreakStart: '11:00',
+                    firstBreakEnd: '14:00',
+                    secondBreakStart: '15:30',
+                    secondBreakEnd: '18:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                },
+                night: {
+                    firstBreakStart: '22:30',
+                    firstBreakEnd: '01:30',
+                    secondBreakStart: '02:30',
+                    secondBreakEnd: '05:30',
+                    hadFirstBrake: false,
+                    hadSecondBrake: false,
+                }
+            }
         }
     ];
 
     const [garageTimestamps, setGarageTimestamps] = useState(initialTimestamps);
 
+    // Helper function to determine if a unit is currently in their active shift period
+    const isInShift = (slot) => {
+        const now = currentTime;
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const { shiftStart, shiftEnd, status, workInWeekends } = slot;
+
+        const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0 = Sunday, 6 = Saturday
+        if (!workInWeekends && isWeekend) {
+            return false;
+        }
+
+        if (shiftStart && shiftEnd) {
+            const [startHour, startMin] = shiftStart.split(":").map(Number);
+            const [endHour, endMin] = shiftEnd.split(":").map(Number);
+            const startTotal = startHour * 60 + startMin;
+            const endTotal = endHour * 60 + endMin;
+
+            const isIn =
+                startTotal < endTotal
+                    ? nowMinutes >= startTotal && nowMinutes < endTotal
+                    : nowMinutes >= startTotal || nowMinutes < endTotal;
+
+            return isIn || status === "away";
+        }
+
+        // If no shift times defined, assume always in shift
+        return true;
+    };
+
     // This function takes a garage slot object and returns how long ago the timestamp was.
     const getElapsedTime = (garageSlot) => {
+        // Get the timestamp in milliseconds from the slot
         const timestampMs = garageSlot.timestamp;
+
+        // Get the current time in milliseconds
         const now = Date.now();
+
+        // Calculate the difference in seconds
         const diff = Math.floor((now - timestampMs) / 1000);
 
+        // If the difference is negative, return 00:00 (timestamp in the future)
         if (diff < 0) return "00:00";
 
+        // Calculate hours, minutes, and seconds from the total difference
         const hours = Math.floor(diff / 3600);
         const minutes = Math.floor((diff % 3600) / 60);
         const seconds = diff % 60;
 
+        // Build the time string dynamically
         const parts = [];
+
+        // Only show hours if greater than 0
         if (hours > 0) parts.push(hours.toString());
+
+        // Show minutes with leading zero if hours are present, or if minutes > 0
         if (minutes > 0 || hours > 0) parts.push(minutes.toString().padStart(2, '0'));
+
+        // Always show seconds with leading zero
         parts.push(seconds.toString().padStart(2, '0'));
 
+        // Return the formatted elapsed time as a string
         return parts.join(":");
     };
 
@@ -84,6 +229,15 @@ export default function Dashboard() {
 
         return () => clearInterval(interval); // Clean up the timer when component unmounts
     }, []);
+
+    // Compute the 3 home slots, sorted by who has been home the longest, only include those in shift or home
+    const sortedHomeUnits = garageTimestamps
+        .filter(slot =>
+            slot.status === "home" &&
+            isInShift(slot)
+        )
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .slice(0, 3);
 
     return (
         <>
@@ -99,21 +253,42 @@ export default function Dashboard() {
                                     A1
                                 </b>
                             </div>
-                            <div className={styles.garageSlotTimer}>
-                                {/* Timer showing how long the slot has been in its current state */}
-                                {/* {getElapsedTime(garageTimestamps[0])} */}
-                            </div>
+                            {isInShift(garageTimestamps[0]) && (
+                                <div className={styles.garageSlotTimer}>
+                                    {getElapsedTime(garageTimestamps[0])}
+                                </div>
+                            )}
                         </div>
                         {/* Image representing whether an ambulance is present */}
-                        <div className={styles.garageSlotMainDivImage}>
+                        <div className={!isInShift(garageTimestamps[0]) && garageTimestamps[0].status === "home" ? styles.garageSlotMainDivImage : ""}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={garageTimestamps[0].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
+                                src={garageTimestamps[0].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_home}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
                             {getElapsedTime(garageTimestamps[0])}
                         </div> */}
+                        {!isInShift(garageTimestamps[0]) && garageTimestamps[0].status === "home" ? null : (
+                            <div className={styles.slotExtraInfoContainer}>
+                                <div className={styles.timesAwayCounter}>
+                                    <div>
+                                        <IconRoad stroke={2} />
+                                    </div>
+                                    <div>
+                                        4
+                                    </div>
+                                </div>
+                                <div className={styles.breakContainer}>
+                                    <div>
+                                        <IconCoffee stroke={2} />
+                                    </div>
+                                    <div>
+                                        <IconCoffee stroke={2} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {/* Individual garage slot display */}
                     <div className={styles.garageSlotMain}>
@@ -123,21 +298,42 @@ export default function Dashboard() {
                                     D1
                                 </b>
                             </div>
-                            <div className={styles.garageSlotTimer}>
-                                {/* Timer showing how long the slot has been in its current state */}
-                                {getElapsedTime(garageTimestamps[1])}
-                            </div>
+                            {isInShift(garageTimestamps[1]) && (
+                                <div className={styles.garageSlotTimer}>
+                                    {getElapsedTime(garageTimestamps[1])}
+                                </div>
+                            )}
                         </div>
                         {/* Image representing whether an ambulance is present */}
-                        <div>
+                        <div className={!isInShift(garageTimestamps[1]) && garageTimestamps[1].status === "home" ? styles.garageSlotMainDivImage : ""}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={garageTimestamps[1].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
+                                src={garageTimestamps[1].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_home}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
                             {getElapsedTime(garageTimestamps[1])}
                         </div> */}
+                        {!isInShift(garageTimestamps[1]) && garageTimestamps[1].status === "home" ? null : (
+                            <div className={styles.slotExtraInfoContainer}>
+                                <div className={styles.timesAwayCounter}>
+                                    <div>
+                                        <IconRoad stroke={2} />
+                                    </div>
+                                    <div>
+                                        1
+                                    </div>
+                                </div>
+                                <div className={styles.breakContainer}>
+                                    <div>
+                                        <IconCoffee stroke={2} />
+                                    </div>
+                                    <div>
+                                        <IconCoffee stroke={2} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {/* Individual garage slot display */}
                     <div className={styles.garageSlotMain}>
@@ -147,21 +343,40 @@ export default function Dashboard() {
                                     DN3
                                 </b>
                             </div>
-                            <div className={styles.garageSlotTimer}>
-                                {/* Timer showing how long the slot has been in its current state */}
-                                {getElapsedTime(garageTimestamps[2])}
-                            </div>
+                            {isInShift(garageTimestamps[2]) && (
+                                <div className={styles.garageSlotTimer}>
+                                    {getElapsedTime(garageTimestamps[2])}
+                                </div>
+                            )}
                         </div>
                         {/* Image representing whether an ambulance is present */}
-                        <div>
+                        <div className={!isInShift(garageTimestamps[2]) && garageTimestamps[2].status === "home" ? styles.garageSlotMainDivImage : ""}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={garageTimestamps[2].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
+                                src={garageTimestamps[2].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_home}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
                             {getElapsedTime(garageTimestamps[2])}
                         </div> */}
+                        <div className={styles.slotExtraInfoContainer}>
+                            <div className={styles.timesAwayCounter}>
+                                <div>
+                                    <IconRoad stroke={2} />
+                                </div>
+                                <div>
+                                    3
+                                </div>
+                            </div>
+                            <div className={styles.breakContainer}>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {/* Individual garage slot display */}
                     <div className={styles.garageSlotMain}>
@@ -171,21 +386,40 @@ export default function Dashboard() {
                                     DN2
                                 </b>
                             </div>
-                            <div className={styles.garageSlotTimer}>
-                                {/* Timer showing how long the slot has been in its current state */}
-                                {getElapsedTime(garageTimestamps[3])}
-                            </div>
+                            {isInShift(garageTimestamps[3]) && (
+                                <div className={styles.garageSlotTimer}>
+                                    {getElapsedTime(garageTimestamps[3])}
+                                </div>
+                            )}
                         </div>
                         {/* Image representing whether an ambulance is present */}
-                        <div>
+                        <div className={!isInShift(garageTimestamps[3]) && garageTimestamps[3].status === "home" ? styles.garageSlotMainDivImage : ""}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={garageTimestamps[3].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
+                                src={garageTimestamps[3].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_home}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
                             {getElapsedTime(garageTimestamps[3])}
                         </div> */}
+                        <div className={styles.slotExtraInfoContainer}>
+                            <div className={styles.timesAwayCounter}>
+                                <div>
+                                    <IconRoad stroke={2} />
+                                </div>
+                                <div>
+                                    2
+                                </div>
+                            </div>
+                            <div className={styles.breakContainer}>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {/* Individual garage slot display */}
                     <div className={styles.garageSlotMain}>
@@ -195,21 +429,40 @@ export default function Dashboard() {
                                     DN1
                                 </b>
                             </div>
-                            <div className={styles.garageSlotTimer}>
-                                {/* Timer showing how long the slot has been in its current state */}
-                                {getElapsedTime(garageTimestamps[4])}
-                            </div>
+                            {isInShift(garageTimestamps[4]) && (
+                                <div className={styles.garageSlotTimer}>
+                                    {getElapsedTime(garageTimestamps[4])}
+                                </div>
+                            )}
                         </div>
                         {/* Image representing whether an ambulance is present */}
-                        <div>
+                        <div className={!isInShift(garageTimestamps[4]) && garageTimestamps[4].status === "home" ? styles.garageSlotMainDivImage : ""}>
                             <Image
                                 alt="Shows either an ambulance or not in a top-down view"
-                                src={garageTimestamps[4].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_occupied}
+                                src={garageTimestamps[4].status === "away" ? AmbuStatus_garage_empty : AmbuStatus_garage_home}
                             />
                         </div>
                         {/* <div className={styles.garageSlotTimer}>
                             {getElapsedTime(garageTimestamps[4])}
                         </div> */}
+                        <div className={styles.slotExtraInfoContainer}>
+                            <div className={styles.timesAwayCounter}>
+                                <div>
+                                    <IconRoad stroke={2} />
+                                </div>
+                                <div>
+                                    5
+                                </div>
+                            </div>
+                            <div className={styles.breakContainer}>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                                <div>
+                                    <IconCoffee stroke={2} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {/* Right-hand info section: date, time, next expected ambulance */}
@@ -232,33 +485,19 @@ export default function Dashboard() {
                     </div>
                     {/* Display which ambulance is expected next */}
                     <div className={styles.extraInfoNextCar}>
-                        <div>
-                            <div>
-                                #1
+                        {sortedHomeUnits.slice(0, 3).map((slot, index) => (
+                            <div key={slot.gate}>
+                                <div>
+                                    #{index + 1}
+                                </div>
+                                <div className={styles.extraInfoNextCarText}>
+                                    {slot.assignedUnit}
+                                </div>
                             </div>
-                            <div className={styles.extraInfoNextCarText}>
-                                DN2
-                            </div>
-                        </div>
-                        <div>
-                            <div>
-                                #2
-                            </div>
-                            <div className={styles.extraInfoNextCarText}>
-                                DN1
-                            </div>
-                        </div>
-                        <div>
-                            <div>
-                                #3
-                            </div>
-                            <div className={styles.extraInfoNextCarText}>
-                                DN3
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 }
