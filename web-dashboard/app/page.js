@@ -24,10 +24,10 @@ export default function Dashboard() {
             awayCount: 0,
             breaks: {
                 day: {
-                    firstBreakStart: null,
-                    firstBreakEnd: null,
-                    secondBreakStart: null,
-                    secondBreakEnd: null,
+                    firstBreakStart: '14:00',
+                    firstBreakEnd: '17:00',
+                    secondBreakStart: '18:00',
+                    secondBreakEnd: '21:00',
                     hadFirstBrake: false,
                     hadSecondBrake: false,
                 },
@@ -52,10 +52,10 @@ export default function Dashboard() {
             awayCount: 0,
             breaks: {
                 day: {
-                    firstBreakStart: null,
-                    firstBreakEnd: null,
-                    secondBreakStart: null,
-                    secondBreakEnd: null,
+                    firstBreakStart: '09:00',
+                    firstBreakEnd: '12:00',
+                    secondBreakStart: '13:00',
+                    secondBreakEnd: '16:00',
                     hadFirstBrake: false,
                     hadSecondBrake: false,
                 },
