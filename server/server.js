@@ -40,10 +40,8 @@ app.get('/', (req, res) => {
     res.send('AmbuStatus 🚑');
 });
 
-app.get('/api/status-update', (req, res) => {
+app.post('/api/status-update', (req, res) => {
     io.to("dashboard").emit("slotUpdated", { status: 'value' });
-    // io.emit("slotUpdated", { status: 'value' });
-    res.send('AmbuStatus 🚑 update');
 });
 
 // ##

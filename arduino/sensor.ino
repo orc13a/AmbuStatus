@@ -7,7 +7,7 @@ const char* ssid = "ZoneZ";      // WiFi navn som kommunikationen skal se over
 const char* password = "12ab12ab12";  // WiFi adgangskode
 
 const char* DeviceID = "sensor_P1";                         // Navnet på sensor som sidder ved hvilken port
-const char* LogUrl = "http://10.12.0.190:4000/updategate";  // IP til serveren og så endpoint til opdatering af status
+const char* LogUrl = "http://10.12.0.190:4000/api/status-update";  // IP til serveren og så endpoint til opdatering af status
 
 const int trans_pin = 4;  //Trig
 const int recv_pin = 5;   //Echo
