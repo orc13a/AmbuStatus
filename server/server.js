@@ -3,18 +3,23 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { logProgress, logSuccess, logWarning } from "./tools/terminalLogs.js";
 import pkg from "./package.json" with { type: "json" };
+import { updateState } from "./tools/updateState.js";
+
+const IP = "http://192.168.99.130";
+const CLIENT_PORT = 3000;
+const SERVER_PORT = 4000;
 
 const app = express();
 const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://192.168.99.152:3000",
+        origin: `${IP}:${CLIENT_PORT}`,
         methods: ["GET", "POST"]
     }
 });
 
-const port = 8080;
+const port = SERVER_PORT;
 
 // midelware
 io.use((socket, next) => {
@@ -40,8 +45,16 @@ app.get('/', (req, res) => {
     res.send('AmbuStatus 🚑');
 });
 
-app.post('/api/status-update', (req, res) => {
-    io.to("dashboard").emit("slotUpdated", { status: 'value' });
+app.post("/api/status-update", (req, res) => {
+    const { sensorId, status } = req.body;
+
+    const updated = updateState(sensorId, status);
+
+    if (updated) {
+        io.to("dashboard").emit("slotUpdated", updated);
+    }
+
+    res.sendStatus(200);
 });
 
 // ##
@@ -62,6 +75,6 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, () => {
-    logSuccess(`Server @ http://localhost:${port}\nv.${pkg.version}`);
+    logSuccess(`Server @ ${IP}:${port}\nv.${pkg.version}`);
     console.log(`\n\n`);
 });

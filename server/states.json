@@ -1,0 +1,32 @@
+{
+  "sensor_P1": {
+    "gate": "P1",
+    "status": "away",
+    "timestamp": 1773759664901,
+    "assignedUnit": "DN1"
+  },
+  "sensor_P2": {
+    "gate": "P2",
+    "status": "home",
+    "timestamp": null,
+    "assignedUnit": "DN2"
+  },
+  "sensor_P3": {
+    "gate": "P3",
+    "status": "home",
+    "timestamp": null,
+    "assignedUnit": "DN3"
+  },
+  "sensor_P4": {
+    "gate": "P4",
+    "status": "home",
+    "timestamp": null,
+    "assignedUnit": "D1"
+  },
+  "sensor_P5": {
+    "gate": "P5",
+    "status": "home",
+    "timestamp": null,
+    "assignedUnit": "A1"
+  }
+}

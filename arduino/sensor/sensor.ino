@@ -3,11 +3,11 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid = "ZoneZ";      // WiFi navn som kommunikationen skal se over
-const char* password = "12ab12ab12";  // WiFi adgangskode
+const char* ssid = "F-mobile";      // WiFi navn som kommunikationen skal se over
+const char* password = "Wireless4Smartphones";  // WiFi adgangskode
 
 const char* DeviceID = "sensor_P1";                         // Navnet på sensor som sidder ved hvilken port
-const char* LogUrl = "http://10.12.0.190:4000/api/status-update";  // IP til serveren og så endpoint til opdatering af status
+const char* LogUrl = "http://192.168.99.130:4000/api/status-update";  // IP til serveren og så endpoint til opdatering af status
 
 const int trans_pin = 4;  //Trig
 const int recv_pin = 5;   //Echo
@@ -15,8 +15,9 @@ float dist_raw;           //distance variable
 int distIdx = 0;          // peger på næste felt i latestDist
 float latestDist[5];      // De 5 nyeste dist værdier
 bool isHome = true;
+bool isAway = false;
 float homeDist = 1.6;
-float loopTime = 2000;
+float loopTime = 15000; // 15 sek
 
 void setup() {
 
@@ -47,24 +48,13 @@ void setup() {
 }
 
 void isAmbuHome() {
-  bool isHomeTest = true;
-  bool isAwayTest = true;
-
   for (int i = 0; i < 5; i++) {
     if (latestDist[i] >= homeDist) {   // én eller flere målinger er ikke under 1.6
-      isHomeTest = false;
+      isHome = false;
+      break;
     }
-    if (latestDist[i] <= homeDist) {   // én eller flere målinger er ikke under 1.6
-      isAwayTest = false;
-    }
-  }
 
-  if (isHomeTest) {
     isHome = true;
-  }
-
-  if (isAwayTest) {
-    isHome = false;
   }
 
   if (isHome) {
@@ -82,7 +72,7 @@ void isAmbuHome() {
 // void SendToBackend(String value) {
 void SendToBackend(String status) {
   String Json = "{";
-  Json = Json + "\"deviceid\":\"" + DeviceID + "\",";
+  Json = Json + "\"sensorId\":\"" + DeviceID + "\",";
   Json = Json + "\"status\":\"" + status + "\"";
   Json = Json + "}";
 
