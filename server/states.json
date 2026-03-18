@@ -2,7 +2,7 @@
   "sensor_P1": {
     "gate": "P1",
     "status": "away",
-    "timestamp": 1773759664901,
+    "timestamp": null,
     "assignedUnit": "DN1"
   },
   "sensor_P2": {

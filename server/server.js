@@ -5,7 +5,7 @@ import { logProgress, logSuccess, logWarning } from "./tools/terminalLogs.js";
 import pkg from "./package.json" with { type: "json" };
 import { updateState } from "./tools/updateState.js";
 
-const IP = "http://192.168.99.130";
+const IP = "http://192.168.8.75";
 const CLIENT_PORT = 3000;
 const SERVER_PORT = 4000;
 
