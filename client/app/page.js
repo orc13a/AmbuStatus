@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { io } from "socket.io-client";
-import { IconCoffee, IconRoad } from "@tabler/icons-react";
+import { IconCoffee, IconHome, IconHomeFilled, IconRoad } from "@tabler/icons-react";
 import garage from "./tools/garage.js";
 import isInShift from "./tools/isInShift.js";
 import getElapsedTime from "./tools/getElapsedTime.js";
@@ -101,6 +101,14 @@ export default function Home() {
                                     </div>
                                     <div>
                                         4
+                                    </div>
+                                </div>
+                                <div className={styles.timesAwayCounter}>
+                                    <div>
+                                        <IconHome stroke={2} />
+                                    </div>
+                                    <div>
+                                        18:00
                                     </div>
                                 </div>
                             </div>
